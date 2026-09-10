@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Convert My Recipe — Coming Soon</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --cream: #fffaf0;
+      --cream-dark: #f5ead8;
+      --green: #315c45;
+      --green-dark: #234433;
+      --orange: #e8753d;
+      --orange-light: #f7c49e;
+      --text: #26352d;
+      --muted: #738078;
+      --white: #ffffff;
+      --shadow: 0 25px 70px rgba(49, 92, 69, 0.13);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--cream);
+      color: var(--text);
+      font-family: "DM Sans", sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Background decoration */
+    .blob {
+      position: fixed;
+      z-index: -1;
+      border-radius: 50%;
+      filter: blur(1px);
+      pointer-events: none;
+    }
+
+    .blob-one {
+      width: 420px;
+      height: 420px;
+      background: #f7dcc4;
+      top: -170px;
+      right: -100px;
+      opacity: .65;
+    }
+
+    .blob-two {
+      width: 350px;
+      height: 350px;
+      background: #dce9dc;
+      bottom: -140px;
+      left: -120px;
+      opacity: .7;
+    }
+
+    header {
+      max-width: 1180px;
+      margin: auto;
+      padding: 30px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--green);
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -.5px;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: var(--green);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      box-shadow: 0 8px 20px rgba(49, 92, 69, .2);
+    }
+
+    .status {
+      color: var(--green);
+      background: #e6f0e8;
+      border: 1px solid #cfe0d3;
+      padding: 8px 15px;
+      border-radius: 100px;
+      font-size: .78rem;
+      font-weight: 700;
+    }
+
+    main {
+      max-width: 1180px;
+      min-height: calc(100vh - 100px);
+      margin: auto;
+      padding: 45px 28px 70px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 75px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--orange);
+      font-weight: 700;
+      font-size: .82rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 20px;
+    }
+
+    .eyebrow span {
+      width: 7px;
+      height: 7px;
+      background: var(--orange);
+      border-radius: 50%;
+    }
+
+    h1 {
+      font-family: "Playfair Display", serif;
+      font-size: clamp(3.4rem, 6vw, 5.7rem);
+      line-height: .98;
+      letter-spacing: -3px;
+      color: var(--green-dark);
+      max-width: 650px;
+    }
+
+    h1 em {
+      color: var(--orange);
+      font-style: normal;
+    }
+
+    .description {
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.75;
+      max-width: 530px;
+      margin: 28px 0;
+    }
+
+    .signup {
+      display: flex;
+      max-width: 500px;
+      background: var(--white);
+      border: 1px solid #e9dfd1;
+      padding: 6px;
+      border-radius: 16px;
+      box-shadow: 0 12px 35px rgba(45, 69, 55, .08);
+    }
+
+    .signup input {
+      flex: 1;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      padding: 13px 15px;
+      font: inherit;
+      color: var(--text);
+      min-width: 0;
+    }
+
+    .signup input::placeholder {
+      color: #a3aaa5;
+    }
+
+    .signup button {
+      border: 0;
+      cursor: pointer;
+      background: var(--orange);
+      color: white;
+      padding: 13px 21px;
+      border-radius: 11px;
+      font: inherit;
+      font-weight: 700;
+      transition: .2s ease;
+    }
+
+    .signup button:hover {
+      background: #d9642c;
+      transform: translateY(-1px);
+    }
+
+    .note {
+      color: #9aa19c;
+      font-size: .76rem;
+      margin-top: 11px;
+      padding-left: 5px;
+    }
+
+    /* Conversion preview */
+    .visual {
+      position: relative;
+    }
+
+    .recipe-card {
+      background: var(--white);
+      border-radius: 30px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(49, 92, 69, .07);
+      transform: rotate(1.2deg);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .card-title {
+      font-family: "Playfair Display", serif;
+      font-size: 1.5rem;
+      color: var(--green-dark);
+    }
+
+    .scale {
+      background: #fef0e6;
+      color: var(--orange);
+      font-size: .72rem;
+      font-weight: 700;
+      padding: 7px 10px;
+      border-radius: 8px;
+    }
+
+    .conversion {
+      background: #f7f4ed;
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .conversion-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .ingredient {
+      display: grid;
+      grid-template-columns: 45px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 0;
+      border-bottom: 1px solid #e9e5dc;
+    }
+
+    .ingredient:last-child {
+      border-bottom: 0;
+      padding-bottom: 2px;
+    }
+
+    .food-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--cream);
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+    }
+
+    .ingredient-name {
+      font-weight: 600;
+      font-size: .91rem;
+    }
+
+    .ingredient-sub {
+      display: block;
+      color: #969e98;
+      font-size: .72rem;
+      margin-top: 2px;
+    }
+
+    .amount {
+      color: var(--green);
+      font-weight: 800;
+      font-size: .88rem;
+    }
+
+    .arrow {
+      position: absolute;
+      left: -48px;
+      top: 48%;
+      width: 70px;
+      height: 70px;
+      background: var(--orange);
+      color: white;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 27px;
+      box-shadow: 0 15px 30px rgba(232, 117, 61, .3);
+      transform: rotate(-8deg);
+    }
+
+    .floating {
+      position: absolute;
+      background: white;
+      border-radius: 16px;
+      padding: 13px 16px;
+      box-shadow: 0 12px 35px rgba(45, 69, 55, .13);
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .floating.one {
+      right: -35px;
+      top: -25px;
+      transform: rotate(4deg);
+    }
+
+    .floating.two {
+      left: -35px;
+      bottom: -30px;
+      transform: rotate(-4deg);
+    }
+
+    .floating small {
+      display: block;
+      color: #9aa19c;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    footer {
+      text-align: center;
+      color: #a0a7a2;
+      font-size: .75rem;
+      padding: 0 20px 25px;
+    }
+
+    .success {
+      display: none;
+      color: var(--green);
+      font-size: .85rem;
+      font-weight: 700;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 850px) {
+      header {
+        padding: 22px 20px;
+      }
+
+      main {
+        grid-template-columns: 1fr;
+        padding: 35px 20px 65px;
+        gap: 70px;
+      }
+
+      h1 {
+        letter-spacing: -2px;
+      }
+
+      .visual {
+        max-width: 550px;
+        width: 100%;
+        margin: auto;
+      }
+
+      .arrow {
+        left: -20px;
+      }
+
+      .floating.one {
+        right: -5px;
+      }
+
+      .floating.two {
+        left: -5px;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .status {
+        display: none;
+      }
+
+      h1 {
+        font-size: 3.2rem;
+      }
+
+      .description {
+        font-size: .98rem;
+      }
+
+      .signup {
+        flex-direction: column;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        gap: 8px;
+      }
+
+      .signup input,
+      .signup button {
+        width: 100%;
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e9dfd1;
+      }
+
+      .signup button {
+        background: var(--orange);
+        border: 0;
+      }
+
+      .recipe-card {
+        padding: 20px;
+        border-radius: 22px;
+      }
+
+      .arrow {
+        width: 55px;
+        height: 55px;
+        font-size: 20px;
+        left: -12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="blob blob-one"></div>
+  <div class="blob blob-two"></div>
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">⚖️</div>
+      Convert My Recipe
+    </div>
+
+    <div class="status">
+      ✦ Launching soon
+    </div>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <div class="eyebrow">
+        <span></span>
+        Your recipes, perfectly scaled
+      </div>
+
+      <h1>
+        Cook for <em>anyone.</em><br>
+        Without the math.
+      </h1>
+
+      <p class="description">
+        Convert My Recipe makes it effortless to convert recipes for any number
+        of people. Change servings, units, or measurements in seconds,
+        so you can spend less time calculating and more time cooking.
+      </p>
+        <form
+          class="signup"
+          id="signupForm"
+          action="https://formspree.io/f/mrpgjlak"
+          method="POST"
+        >
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter your email address"
+            required
+          />
+
+          <button type="submit">Notify me</button>
+        </form>
+
+        <div class="success" id="successMessage" style="display: none;">
+          ✓ You're on the list! We'll let you know when we launch.
+        </div>
+
+        <p class="note">
+          No spam. Just one delicious launch announcement.
+        </p>
+<!--      <form class="signup" id="signupForm">-->
+<!--        <input-->
+<!--          type="email"-->
+<!--          id="email"-->
+<!--          placeholder="Enter your email address"-->
+<!--          required-->
+<!--        />-->
+<!--        <button type="submit">Notify me</button>-->
+<!--      </form>-->
+
+<!--      <div class="success" id="successMessage">-->
+<!--        ✓ You're on the list! We'll let you know when we launch.-->
+<!--      </div>-->
+
+<!--      <p class="note">-->
+<!--        No spam. Just one delicious launch announcement.-->
+<!--      </p>-->
+    </section>
+
+    <section class="visual">
+
+      <div class="floating one">
+        🧮 Instant conversions
+        <small>cups → grams → ml</small>
+      </div>
+
+      <div class="floating two">
+        👨‍👩‍👧‍👦 Any serving size
+        <small>2 people → 12 people</small>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <div class="recipe-card">
+
+        <div class="card-header">
+          <div class="card-title">Chocolate Cake</div>
+          <div class="scale">6 → 12 servings</div>
+        </div>
+
+        <div class="conversion">
+
+          <div class="conversion-top">
+            <span>Ingredients</span>
+            <span>Converted</span>
+          </div>
+
+          <div class="ingredient">
+            <div class="food-icon">🌾</div>
+            <div>
+              <span class="ingredient-name">All-purpose flour</span>
+              <span class="ingredient-sub">Original: 1½ cups</span>
+            </div>
+            <div class="amount">3 cups</div>
+          </div>
+
+          <div class="ingredient">
+            <div class="food-icon">🍫</div>
+            <div>
+              <span class="ingredient-name">Cocoa powder</span>
+              <span class="ingredient-sub">Original: ½ cup</span>
+            </div>
+            <div class="amount">1 cup</div>
+          </div>
+
+          <div class="ingredient">
+            <div class="food-icon">🥚</div>
+            <div>
+              <span class="ingredient-name">Eggs</span>
+              <span class="ingredient-sub">Original: 2 large</span>
+            </div>
+            <div class="amount">4 large</div>
+          </div>
+
+          <div class="ingredient">
+            <div class="food-icon">🧈</div>
+            <div>
+              <span class="ingredient-name">Butter</span>
+              <span class="ingredient-sub">Original: 100g</span>
+            </div>
+            <div class="amount">200g</div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    © 2026 Convert My Recipe · Made for people who love to cook.
+  </footer>
+
+<!--  <script>-->
+<!--    const form = document.getElementById("signupForm");-->
+<!--    const email = document.getElementById("email");-->
+<!--    const success = document.getElementById("successMessage");-->
+
+<!--    form.addEventListener("submit", function (event) {-->
+<!--      event.preventDefault();-->
+
+<!--      if (email.value.trim() !== "") {-->
+<!--        form.style.display = "none";-->
+<!--        success.style.display = "block";-->
+<!--      }-->
+<!--    });-->
+<!--  </script>-->
+
+    <script>
+      const form = document.getElementById("signupForm");
+      const success = document.getElementById("successMessage");
+
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const button = form.querySelector("button");
+
+        button.disabled = true;
+        button.textContent = "Submitting...";
+
+        try {
+          const response = await fetch(form.action, {
+            method: "POST",
+            body: new FormData(form),
+            headers: {
+              Accept: "application/json"
+            }
+          });
+
+          if (response.ok) {
+            form.style.display = "none";
+            success.style.display = "block";
+          } else {
+            throw new Error("Form submission failed");
+          }
+        } catch (error) {
+          button.disabled = false;
+          button.textContent = "Notify me";
+          alert("Something went wrong. Please try again.");
+        }
+      });
+    </script>
+</body>
+</html>
